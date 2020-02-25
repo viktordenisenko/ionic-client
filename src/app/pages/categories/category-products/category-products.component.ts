@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {IResponse} from '../../../interfaces/IResponse';
-import {environment} from '../../../../environments/environment';
+import {ActivatedRoute} from '@angular/router';
+import {ApiService} from '../../../services/api.service';
+import {IProduct} from '../../../interfaces/IProduct';
+import {ICategory} from '../../../interfaces/ICategory';
 
 @Component({
   selector: 'app-category-products',
@@ -9,9 +10,24 @@ import {environment} from '../../../../environments/environment';
   styleUrls: ['./category-products.component.scss'],
 })
 export class CategoryProductsComponent implements OnInit {
+  public product: IProduct[] = [];
+  public category: ICategory[] = [];
+  constructor(
+      private api: ApiService,
+      private route: ActivatedRoute
 
-  constructor() { }
+  ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.route.params.subscribe(params => {
+      this.api.getProductsByCategory(params.categoryId).subscribe(response => {
+        console.log(response);
+          if(response.success) {
+              this.product = response.product;
+              this.category = response.category;
+          }
+      });
+    });
+  }
 
 }
